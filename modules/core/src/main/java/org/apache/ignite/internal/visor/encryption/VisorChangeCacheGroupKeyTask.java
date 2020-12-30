@@ -20,6 +20,7 @@ import java.util.Collection;
 import java.util.Collections;
 import org.apache.ignite.IgniteEncryption;
 import org.apache.ignite.IgniteException;
+import org.apache.ignite.internal.processors.task.GridInternal;
 import org.apache.ignite.internal.visor.VisorJob;
 import org.apache.ignite.internal.visor.VisorOneNodeTask;
 
@@ -28,6 +29,7 @@ import org.apache.ignite.internal.visor.VisorOneNodeTask;
  *
  * @see IgniteEncryption#changeCacheGroupKey(Collection)
  */
+@GridInternal
 public class VisorChangeCacheGroupKeyTask extends VisorOneNodeTask<VisorCacheGroupEncryptionTaskArg, Void> {
     /** Serial version uid. */
     private static final long serialVersionUID = 0L;
