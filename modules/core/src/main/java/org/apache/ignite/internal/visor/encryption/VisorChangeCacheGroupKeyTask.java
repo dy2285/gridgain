@@ -20,9 +20,13 @@ import java.util.Collection;
 import java.util.Collections;
 import org.apache.ignite.IgniteEncryption;
 import org.apache.ignite.IgniteException;
+import org.apache.ignite.compute.ComputeJobContext;
 import org.apache.ignite.internal.processors.task.GridInternal;
 import org.apache.ignite.internal.visor.VisorJob;
 import org.apache.ignite.internal.visor.VisorOneNodeTask;
+import org.apache.ignite.lang.IgniteFuture;
+import org.apache.ignite.lang.IgniteInClosure;
+import org.apache.ignite.resources.JobContextResource;
 
 /**
  * The task for changing the encryption key of the cache group.
@@ -44,6 +48,13 @@ public class VisorChangeCacheGroupKeyTask extends VisorOneNodeTask<VisorCacheGro
         /** Serial version uid. */
         private static final long serialVersionUID = 0L;
 
+        /** */
+        private IgniteFuture opFut;
+
+        /** Job context. */
+        @JobContextResource
+        private ComputeJobContext jobCtx;
+
         /**
          * @param arg Job argument.
          * @param debug Flag indicating whether debug information should be printed into node log.
@@ -54,7 +65,23 @@ public class VisorChangeCacheGroupKeyTask extends VisorOneNodeTask<VisorCacheGro
 
         /** {@inheritDoc} */
         @Override protected Void run(VisorCacheGroupEncryptionTaskArg taskArg) throws IgniteException {
-            ignite.encryption().changeCacheGroupKey(Collections.singleton(taskArg.groupName())).get();
+            if (opFut == null) {
+                opFut = ignite.encryption().changeCacheGroupKey(Collections.singleton(taskArg.groupName()));
+
+                if (opFut.isDone())
+                    opFut.get();
+                else {
+                    jobCtx.holdcc();
+
+                    opFut.listen(new IgniteInClosure<IgniteFuture>() {
+                        @Override public void apply(IgniteFuture f) {
+                            jobCtx.callcc();
+                        }
+                    });
+                }
+            }
+
+            opFut.get();
 
             return null;
         }
