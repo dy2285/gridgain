@@ -2891,7 +2891,8 @@ public class GridCommandHandlerTest extends GridCommandHandlerClusterPerMethodAb
         IgniteEx ignite = startGrids(srvNodes);
 
         startGrid(CLIENT_NODE_NAME_PREFIX);
-        startGrid(DAEMON_NODE_NAME_PREFIX);
+        // Uncomment when https://ggsystems.atlassian.net/browse/GG-32432 will be done
+        //startGrid(DAEMON_NODE_NAME_PREFIX);
 
         ignite.cluster().state(ACTIVE);
 
