@@ -1611,7 +1611,12 @@ public class CacheLateAffinityAssignmentTest extends GridCommonAbstractTest {
         spiC = igniteInstanceName -> clientSpi;
 
         IgniteInternalFuture<?> startClientFut = runAsync(() -> {
-            startClient(4, 5);
+            try {
+                startClient(4, 5);
+            }
+            catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         });
 
         clientSpi.waitForBlocked();
