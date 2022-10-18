@@ -18,6 +18,8 @@ package org.apache.ignite.internal.processors.odbc;
 
 import org.apache.ignite.internal.binary.BinaryWriterExImpl;
 
+import java.util.concurrent.CompletableFuture;
+
 /**
  * Client listener request handler.
  */
@@ -29,6 +31,16 @@ public interface ClientListenerRequestHandler {
      * @return Response.
      */
     ClientListenerResponse handle(ClientListenerRequest req);
+
+    /**
+     * Handle request asynchronously.
+     *
+     * @param req Request.
+     * @return Response.
+     */
+    default CompletableFuture<ClientListenerResponse> handleAsync(ClientListenerRequest req){
+        return CompletableFuture.completedFuture(handle(req));
+    }
 
     /**
      * Handle exception.
