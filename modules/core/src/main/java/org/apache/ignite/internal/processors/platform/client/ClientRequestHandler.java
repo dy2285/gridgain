@@ -85,7 +85,8 @@ public class ClientRequestHandler implements ClientListenerRequestHandler {
 
                     if (txCtx != null) {
                         try {
-                            // TODO: Acquire asynchronously.
+                            // TODO: Use async lock.
+                            // https://github.com/IBM/java-async-util/blob/master/asyncutil/src/main/java/com/ibm/asyncutil/locks/AsyncLock.java
                             txCtx.acquire(true);
 
                             return CompletableFuture.completedFuture(((ClientRequest)req).process(ctx));
