@@ -16,8 +16,9 @@
 
 package org.apache.ignite.internal.processors.platform.client.tx;
 
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.CompletionStage;
+
+import com.ibm.asyncutil.locks.AsyncLock;
 import org.apache.ignite.IgniteCheckedException;
 import org.apache.ignite.internal.processors.cache.distributed.near.GridNearTxLocal;
 import org.apache.ignite.transactions.TransactionState;
@@ -33,7 +34,7 @@ public class ClientTxContext {
     private final GridNearTxLocal tx;
 
     /** Lock. */
-    private final Lock lock = new ReentrantLock();
+    private final AsyncLock lock = AsyncLock.create();
 
     /**
      * Constructor.
@@ -49,12 +50,26 @@ public class ClientTxContext {
     /**
      * Acquire context to work with transaction in the current thread.
      */
-    @SuppressWarnings("LockAcquiredButNotSafelyReleased")
-    public void acquire(boolean resumeTx) throws IgniteCheckedException {
-        lock.lock();
+    public AsyncLock.LockToken acquire(boolean resumeTx) throws IgniteCheckedException {
+        return acquireAsync(resumeTx).toCompletableFuture().join();
+    }
 
-        if (resumeTx)
-            tx.resume();
+    /**
+     * Acquire context to work with transaction in the current thread.
+     */
+    public CompletionStage<AsyncLock.LockToken> acquireAsync(boolean resumeTx) {
+        return lock.acquireLock().thenApply(token -> {
+            if (resumeTx) {
+                try {
+                    tx.resume();
+                } catch (IgniteCheckedException e) {
+                    token.releaseLock();
+                    throw new RuntimeException(e);
+                }
+            }
+
+            return token;
+        });
     }
 
     /**
@@ -77,7 +92,7 @@ public class ClientTxContext {
             }
         }
         finally {
-            lock.unlock();
+            lock.r();
         }
     }
 
