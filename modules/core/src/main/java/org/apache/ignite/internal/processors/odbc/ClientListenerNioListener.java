@@ -18,6 +18,7 @@ package org.apache.ignite.internal.processors.odbc;
 
 import java.io.Closeable;
 import java.util.TimeZone;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.ignite.IgniteCheckedException;
 import org.apache.ignite.IgniteLogger;
@@ -192,11 +193,9 @@ public class ClientListenerNioListener extends GridNioServerListenerAdapter<Clie
         assert req != null;
 
         try {
-            long startTime = 0;
+            final long startTime = log.isDebugEnabled() ? System.nanoTime() : 0;
 
             if (log.isDebugEnabled()) {
-                startTime = System.nanoTime();
-
                 log.debug("Client request received [reqId=" + req.requestId() + ", addr=" +
                     ses.remoteAddress() + ", req=" + req + ']');
             }
@@ -206,24 +205,42 @@ public class ClientListenerNioListener extends GridNioServerListenerAdapter<Clie
             if (authCtx != null)
                 AuthorizationContext.context(authCtx);
 
+            // TODO GG-35608 - security context and async - ???.
             try (OperationSecurityContext s = ctx.security().withContext(connCtx.securityContext())) {
-                ClientListenerResponse resp = handler.handle(req);
+                CompletableFuture<ClientListenerResponse> resp = handler.handleAsync(req);
 
-                if (resp != null) {
-                    if (log.isDebugEnabled()) {
-                        long dur = (System.nanoTime() - startTime) / 1000;
+                resp.handle((res, err) -> {
+                    if (err != null) {
+                        handler.unregisterRequest(req.requestId());
 
-                        log.debug("Client request processed [reqId=" + req.requestId() + ", dur(mcs)=" + dur +
-                            ", resp=" + resp.status() + ']');
+                        if (err instanceof Error)
+                            U.error(log, "Failed to process client request [req=" + req + ']', err);
+                        else
+                            U.warn(log, "Failed to process client request [req=" + req + ']', err);
+
+                        ses.send(parser.encode(handler.handleException(err, req)));
+
+                        return null;
                     }
 
-                    GridNioFuture<?> fut = ses.send(parser.encode(resp));
+                    if (res != null) {
+                        if (log.isDebugEnabled()) {
+                            long dur = (System.nanoTime() - startTime) / 1000;
 
-                    fut.listen(f -> {
-                        if (f.error() == null)
-                            resp.onSent();
-                    });
-                }
+                            log.debug("Client request processed [reqId=" + req.requestId() + ", dur(mcs)=" + dur +
+                                    ", resp=" + res.status() + ']');
+                        }
+
+                        GridNioFuture<?> fut = ses.send(parser.encode(res));
+
+                        fut.listen(f -> {
+                            if (f.error() == null)
+                                res.onSent();
+                        });
+                    }
+
+                    return null;
+                });
             }
             finally {
                 if (authCtx != null)
