@@ -35,6 +35,8 @@ import org.apache.ignite.internal.util.typedef.X;
 import org.apache.ignite.internal.util.typedef.internal.U;
 import org.apache.ignite.plugin.security.SecurityException;
 
+import java.util.concurrent.CompletableFuture;
+
 import static org.apache.ignite.internal.processors.platform.client.ClientProtocolVersionFeature.BITMAP_FEATURES;
 import static org.apache.ignite.internal.processors.platform.client.ClientProtocolVersionFeature.PARTITION_AWARENESS;
 
@@ -67,6 +69,11 @@ public class ClientRequestHandler implements ClientListenerRequestHandler {
 
     /** {@inheritDoc} */
     @Override public ClientListenerResponse handle(ClientListenerRequest req) {
+        throw new RuntimeException("Not implemented.");
+    }
+
+    /** {@inheritDoc} */
+    @Override public CompletableFuture<ClientListenerResponse> handleAsync(ClientListenerRequest req) {
         try {
             if (req instanceof ClientTxAwareRequest) {
                 ClientTxAwareRequest req0 = (ClientTxAwareRequest)req;
@@ -78,9 +85,10 @@ public class ClientRequestHandler implements ClientListenerRequestHandler {
 
                     if (txCtx != null) {
                         try {
+                            // TODO: Acquire asynchronously.
                             txCtx.acquire(true);
 
-                            return ((ClientRequest)req).process(ctx);
+                            return CompletableFuture.completedFuture(((ClientRequest)req).process(ctx));
                         }
                         catch (IgniteCheckedException e) {
                             throw new IgniteClientException(ClientStatus.FAILED, e.getMessage(), e);
@@ -97,7 +105,7 @@ public class ClientRequestHandler implements ClientListenerRequestHandler {
                 }
             }
 
-            return ((ClientRequest)req).process(ctx);
+            return CompletableFuture.completedFuture(((ClientRequest)req).process(ctx));
         }
         catch (SecurityException ex) {
             throw new IgniteClientException(
