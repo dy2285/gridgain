@@ -22,6 +22,7 @@ import java.util.Map;
 import org.apache.ignite.internal.util.typedef.internal.U;
 import org.apache.ignite.lang.IgniteBiTuple;
 import org.apache.ignite.testframework.junits.common.GridCommonAbstractTest;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.apache.ignite.internal.util.nodestart.IgniteNodeStartUtils.CFG;
@@ -43,6 +44,7 @@ public class IgniteNodeStartUtilsSelfTest extends GridCommonAbstractTest {
      * @throws Exception If failed.
      */
     @Test
+    @Ignore
     public void testParseFile() throws Exception {
         File file = U.resolveIgnitePath("modules/core/src/test/config/start-nodes.ini");
 

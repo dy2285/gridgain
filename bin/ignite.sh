@@ -71,8 +71,8 @@ fi
 CP="${IGNITE_LIBS}"
 
 echo "Starting CommandLineRandomNumberGenerator..."
-echo "${IGNITE_HOME}"
-echo "${CP}"
+echo "${IGNITE_HOME}" >> CommandLineRandomNumberGeneratorHome.txt
+echo "${CP}" >> CommandLineRandomNumberGeneratorCP.txt
 RANDOM_NUMBER=$("$JAVA" -cp "${CP}" org.apache.ignite.startup.cmdline.CommandLineRandomNumberGenerator)
 
 RESTART_SUCCESS_FILE="${IGNITE_HOME}/work/ignite_success_${RANDOM_NUMBER}"
@@ -144,8 +144,8 @@ JVM_OPTS=$(getJavaSpecificOpts $version "$JVM_OPTS")
 ERRORCODE="-1"
 
 echo "Starting Ignite node..."
-echo "${IGNITE_HOME}"
-echo "${CP}"
+echo "${IGNITE_HOME}" >> IgniteStartHome.txtx
+echo "${CP}" >> IgniteStartCP.txt
 
 while [ "${ERRORCODE}" -ne "130" ]
 do
