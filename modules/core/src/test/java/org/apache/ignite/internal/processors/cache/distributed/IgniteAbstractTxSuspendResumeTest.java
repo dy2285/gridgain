@@ -133,6 +133,13 @@ public abstract class IgniteAbstractTxSuspendResumeTest extends GridCommonAbstra
         super.afterTest();
     }
 
+    /** {@inheritDoc} */
+    @Override protected void afterTestsStopped() throws Exception {
+        super.afterTestsStopped();
+
+        stopAllGrids();
+    }
+
     /**
      * @return Number of server nodes.
      */
