@@ -159,7 +159,7 @@ public class IgniteConfiguration {
     /** Default core size of public thread pool. */
     public static final int AVAILABLE_PROC_CNT = Integer.getInteger(
         IgniteSystemProperties.IGNITE_OVERRIDE_AVAILABLE_CPUS,
-        Runtime.getRuntime().availableProcessors());
+        16);
 
     /** Default core size of public thread pool. */
     public static final int DFLT_PUBLIC_THREAD_CNT = max(8, AVAILABLE_PROC_CNT);
