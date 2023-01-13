@@ -40,6 +40,7 @@ import org.apache.ignite.IgniteLogger;
 import org.apache.ignite.IgniteSystemProperties;
 import org.apache.ignite.configuration.DataRegionConfiguration;
 import org.apache.ignite.configuration.DataStorageConfiguration;
+import org.apache.ignite.configuration.IgniteConfiguration;
 import org.apache.ignite.configuration.PageReplacementMode;
 import org.apache.ignite.events.EventType;
 import org.apache.ignite.events.PageReplacementStartEvent;
@@ -332,7 +333,7 @@ public class PageMemoryImpl implements PageMemoryEx {
 
         asyncRunner = new ThreadPoolExecutor(
             0,
-            Runtime.getRuntime().availableProcessors(),
+            IgniteConfiguration.AVAILABLE_PROC_CNT,
             30L,
             TimeUnit.SECONDS,
             new ArrayBlockingQueue<>(Runtime.getRuntime().availableProcessors()),
