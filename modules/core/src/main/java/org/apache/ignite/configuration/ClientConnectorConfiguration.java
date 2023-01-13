@@ -45,7 +45,7 @@ public class ClientConnectorConfiguration {
     public static final int DFLT_THREAD_POOL_SIZE = IgniteConfiguration.DFLT_PUBLIC_THREAD_CNT;
 
     /** Default selector count. */
-    public static final int DFLT_SELECTOR_CNT = Math.max(4, Runtime.getRuntime().availableProcessors() / 2);
+    public static final int DFLT_SELECTOR_CNT = Math.max(4, IgniteConfiguration.AVAILABLE_PROC_CNT / 2);
 
     /** Default handshake timeout. */
     public static final int DFLT_HANDSHAKE_TIMEOUT = 10_000;

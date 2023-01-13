@@ -266,7 +266,7 @@ public class TcpCommunicationSpi extends TcpCommunicationConfigInitializer {
      * {@code "Math.max(4, Runtime.getRuntime().availableProcessors()
      * / 2)"}.
      */
-    public static final int DFLT_SELECTORS_CNT = Math.max(4, Runtime.getRuntime().availableProcessors() / 2);
+    public static final int DFLT_SELECTORS_CNT = Math.max(4, IgniteConfiguration.AVAILABLE_PROC_CNT / 2);
 
     /** Connection index meta for session. */
     public static final int CONN_IDX_META = GridNioSessionMetaKey.nextUniqueKey();
