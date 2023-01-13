@@ -2207,6 +2207,13 @@ public final class IgniteSystemProperties {
         "IGNITE_STRICT_CONSISTENCY_CHECK";
 
     /**
+     * Overrides available cores when calculating Ignite node thread pools sizes.
+     */
+    @SystemProperty(value = "Overrides available cores when calculating thread pools sizes")
+    public static final String IGNITE_OVERRIDE_AVAILABLE_CPUS =
+        "IGNITE_OVERRIDE_AVAILABLE_CPUS";
+
+    /**
      * Enforces singleton.
      */
     private IgniteSystemProperties() {

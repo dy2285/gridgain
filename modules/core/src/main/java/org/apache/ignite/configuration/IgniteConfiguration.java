@@ -157,7 +157,9 @@ public class IgniteConfiguration {
     public static final int DFLT_TIME_SERVER_PORT_RANGE = 100;
 
     /** Default core size of public thread pool. */
-    public static final int AVAILABLE_PROC_CNT = Runtime.getRuntime().availableProcessors();
+    public static final int AVAILABLE_PROC_CNT = Integer.getInteger(
+        IgniteSystemProperties.IGNITE_OVERRIDE_AVAILABLE_CPUS,
+        Runtime.getRuntime().availableProcessors());
 
     /** Default core size of public thread pool. */
     public static final int DFLT_PUBLIC_THREAD_CNT = max(8, AVAILABLE_PROC_CNT);

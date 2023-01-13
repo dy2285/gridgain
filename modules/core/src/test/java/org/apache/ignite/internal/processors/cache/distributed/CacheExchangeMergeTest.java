@@ -77,6 +77,7 @@ import org.apache.ignite.plugin.extensions.communication.Message;
 import org.apache.ignite.testframework.GridTestUtils;
 import org.apache.ignite.testframework.ListeningTestLogger;
 import org.apache.ignite.testframework.LogListener;
+import org.apache.ignite.testframework.junits.WithSystemProperty;
 import org.apache.ignite.testframework.junits.common.GridCommonAbstractTest;
 import org.apache.ignite.thread.IgniteThreadFactory;
 import org.apache.ignite.transactions.Transaction;
@@ -101,6 +102,7 @@ import static org.apache.ignite.testframework.LogListener.matches;
 /**
  *
  */
+@WithSystemProperty(key = "IGNITE_OVERRIDE_AVAILABLE_CPUS", value = "8")
 public class CacheExchangeMergeTest extends GridCommonAbstractTest {
     /** */
     private static final long WAIT_SECONDS = 45;

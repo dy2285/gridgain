@@ -62,6 +62,7 @@ import org.apache.ignite.thread.IgniteThreadPoolExecutor;
 import org.jetbrains.annotations.Nullable;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static org.apache.ignite.configuration.IgniteConfiguration.AVAILABLE_PROC_CNT;
 import static org.apache.ignite.configuration.IgniteConfiguration.DFLT_THREAD_KEEP_ALIVE_TIME;
 import static org.apache.ignite.failure.FailureType.SYSTEM_WORKER_TERMINATION;
 import static org.apache.ignite.internal.processors.metric.impl.MetricUtils.metricName;
@@ -423,7 +424,7 @@ public class PoolProcessor extends GridProcessorAdapter {
         affExecSvc.allowCoreThreadTimeOut(true);
 
         if (IgniteComponentType.INDEXING.inClassPath()) {
-            int cpus = Runtime.getRuntime().availableProcessors();
+            int cpus = AVAILABLE_PROC_CNT;
 
             idxExecSvc = new IgniteThreadPoolExecutor(
                 "idx",
@@ -1056,6 +1057,7 @@ public class PoolProcessor extends GridProcessorAdapter {
      */
     private void stopExecutors0(IgniteLogger log) {
         assert log != null;
+
 
         U.shutdownNow(getClass(), execSvc, log);
 
