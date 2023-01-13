@@ -187,6 +187,8 @@ public class CacheExchangeMergeTest extends GridCommonAbstractTest {
         DataStorageConfiguration dsCfg = new DataStorageConfiguration();
         dsCfg.getDefaultDataRegionConfiguration().setMaxSize(400 * U.MB);
         dsCfg.getDefaultDataRegionConfiguration().setInitialSize(400 * U.MB);
+        dsCfg.getDefaultDataRegionConfiguration().setCheckpointPageBufferSize(40 * U.MB);
+        dsCfg.setSystemRegionMaxSize(dsCfg.getSystemRegionInitialSize());
 
         cfg.setDataStorageConfiguration(dsCfg);
 
