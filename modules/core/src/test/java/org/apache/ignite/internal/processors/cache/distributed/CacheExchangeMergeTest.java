@@ -1210,7 +1210,7 @@ public class CacheExchangeMergeTest extends GridCommonAbstractTest {
         if (latch != null && !latch.await(WAIT_SECONDS, TimeUnit.SECONDS))
             fail("Failed to wait for expected messages.");
 
-        stopGrid(0);
+        stopGrid(getTestIgniteInstanceName(0), false, false);
 
         fut.get();
 
