@@ -129,8 +129,6 @@ public class CacheParallelStartTest extends GridCommonAbstractTest {
         stopAllGrids();
 
         cleanPersistenceDir();
-
-        System.clearProperty(IGNITE_ALLOW_START_CACHES_IN_PARALLEL);
     }
 
     /**
